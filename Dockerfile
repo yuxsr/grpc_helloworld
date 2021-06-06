@@ -8,5 +8,5 @@ RUN make build
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
-COPY --from=builder /go/src/app/app .
-CMD ["./app"]
+COPY --from=builder /go/src/app/appctl .
+CMD ["/root/appctl"]
