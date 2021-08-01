@@ -1,38 +1,34 @@
 package main
 
 import (
-	"context"
 	"log"
-	"net"
+	"os"
 
-	pb "grpc_helloworld/proto"
+	"grpc_helloworld/client"
+	"grpc_helloworld/server"
 
-	"google.golang.org/grpc"
+	"github.com/spf13/cobra"
 )
-
-const (
-	port = ":50051"
-)
-
-// server is used to implement helloworld.GreeterServer.
-type server struct {
-	pb.UnimplementedGreeterServer
-}
-
-// SayHello implements helloworld.GreeterServer.
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
-}
 
 func main() {
-	lis, err := net.Listen("tcp", port)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	var cmdServer = &cobra.Command{
+		Use:   "server",
+		Short: "start server",
+		Long:  `start server.`,
+		Run:   server.StartServer,
 	}
-	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+
+	var cmdClient = &cobra.Command{
+		Use:   "client",
+		Short: "start client",
+		Long:  `start client.`,
+		Run:   client.StartClient,
+	}
+
+	var rootCmd = &cobra.Command{Use: "app"}
+	rootCmd.AddCommand(cmdServer, cmdClient)
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatalf("failed cmd: %v", err)
+		os.Exit(-1)
 	}
 }
