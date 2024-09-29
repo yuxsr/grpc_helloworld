@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/grpc_helloworld:${GITHUB_SHA}
+          tags: ${{ secrets.DOCKER_USERNAME }}/grpc_helloworld:${{ github.sha }}
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
